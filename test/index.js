@@ -42,26 +42,35 @@ function checkScopes() {
   var scopedHandler = new ScopedHandler();
 
   walkitout('.',
-    scopedHandler.handleFile, scopedHandler.handleFinish);
+    scopedHandler.handleFile, 
+    scopedHandler.handleFinish, 
+    scopedHandler);
 }
 
-ScopedHandler.prototype.handleFile = ScopedHandler_handleFile;
-ScopedHandler.prototype.handleFinish = ScopedHandler_handleFinish;
-ScopedHandler.prototype.toString = ScopedHandler_toString;
+function ScopedHandler() 
+{
+  this.handleFile = function (err, fileName, done) {
+    var actual = this.toString();
+    var expected = '[ScopedHandler]';
 
-function ScopedHandler() {}
+    assert.strictEqual(actual, expected,
+      'callback handler should retain scope: ' +
+      'expected "' + expected + '" not "' + actual + '"');
 
-function ScopedHandler_handleFile(err, fileName, done) {
-  assert.strictEqual(this, '[ScopedHandler]',
-    'callback handler should retain scope');
-  done();
+    done();
+  };
+
+  this.handleFinish = function () {
+    var actual = this.toString();
+    var expected = '[ScopedHandler]';
+
+    assert.strictEqual(actual, expected,
+      'callback handler should retain scope: ' +
+      'expected "' + expected + '" not "' + actual + '"');
+  };
+
+  this.toString = function () {
+    return '[ScopedHandler]';
+  };
 }
 
-function ScopedHandler_handleFinish(err, filename, done) {
-  assert.strictEqual(this, '[ScopedHandler]',
-    'finish handler should retain scope');
-}
-
-function ScopedHandler_toString() {
-  return '[ScopedHandler]';
-}
