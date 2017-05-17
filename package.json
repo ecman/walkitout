@@ -1,6 +1,6 @@
 {
   "name": "walkitout",
-  "version": "1.0.0-3",
+  "version": "1.0.0-4",
   "description": "Walk a directory tree recursively with callback and finish handler, asynchronously",
   "main": "index.js",
   "directories": {
