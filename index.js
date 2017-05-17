@@ -5,25 +5,19 @@ module.exports = walkitout;
 
 function walkitout(filePath, callback, completer, scope, processor)
 {
-  var dirsRemaining = 0;
   var directories = [];
   var files = [];
   var fileCount = 0;
   
   function dirDone() 
   {
-    dirsRemaining =- 1;
-
-    if (dirsRemaining === -1) 
+    if (processor)
     {
-      if (processor)
-      {
-        processor();
-      }
-      else if (completer)
-      {
-        completer.call(scope);
-      }
+      processor();
+    }
+    else if (completer)
+    {
+      completer.call(scope);
     }
 
   } // dirDone
@@ -82,7 +76,6 @@ function walkitout(filePath, callback, completer, scope, processor)
         if ((directories.length + 
               files.length) === fileCount) 
         {
-          dirsRemaining = directories.length || 1;
           processDirectories();
         }
 
@@ -117,19 +110,6 @@ function walkitout(filePath, callback, completer, scope, processor)
       processFiles();
       return;
     }
-
-    /*
-    while (dirname && dirname[0] === '.') 
-    {
-      dirname = directories.pop();
-    }
-
-    if (!dirname)
-    {
-      processFiles();
-      return;
-    }
-    */
 
     walkitout(path.join(filePath, dirname),
       callback, completer, scope, processDirectories);
