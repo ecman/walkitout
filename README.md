@@ -10,7 +10,15 @@ Walk a directory tree recursively with callback and finish handler, asynchronous
 var walkitout = require('walkitout');
 
 console.log("START WALK");
-walkitout('.', processLog, processComplete)
+
+/**
+ * @param path      {string} path to walk
+ * @param callback  {function} callback handler 
+ * @param finish    {function} optional finish handler
+ * @param scope     {object} optional handler scope
+ */
+walkitout('.', processLog, processComplete, null)
+
 console.log("WALK STARTED");
 
 function processLog(err, filename, done) {

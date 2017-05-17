@@ -3,15 +3,13 @@ var path = require('path');
 
 module.exports = walkitout;
 
-function walkitout(filePath, callback, completer, processor)
+function walkitout(filePath, callback, completer, scope, processor)
 {
   var dirsRemaining = 0;
   var directories = [];
   var files = [];
   var fileCount = 0;
-
-  completer = completer || (function () {});
-
+  
   function dirDone() 
   {
     dirsRemaining =- 1;
@@ -22,9 +20,9 @@ function walkitout(filePath, callback, completer, processor)
       {
         processor();
       }
-      else 
+      else if (completer)
       {
-        completer();
+        completer.call(scope);
       }
     }
 
@@ -102,8 +100,10 @@ function walkitout(filePath, callback, completer, processor)
       return;
     }
 
-    callback(null, path.join(filePath, filename), function () {
-      processFiles();
+    callback.call(scope,
+      null, path.join(filePath, filename),
+      function () {
+        processFiles();
     });
 
   } // processFiles
@@ -131,7 +131,8 @@ function walkitout(filePath, callback, completer, processor)
     }
     */
 
-    walkitout(path.join(filePath, dirname), callback, processDirectories);
+    walkitout(path.join(filePath, dirname),
+      callback, completer, scope, processDirectories);
 
   } // processDirectories
 
