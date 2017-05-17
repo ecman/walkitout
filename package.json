@@ -1,0 +1,47 @@
+{
+  "name": "walkitout",
+  "version": "1.0.0-0",
+  "description": "Walk a directory tree recursively with callback and finish handler, asynchronously",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "istanbul": "^0.4.5"
+  },
+  "scripts": {
+    "test": "istanbul cover test",
+    "postversion": "git push && git push --tags",
+    "preversion": "node test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ecman/walkitout.git"
+  },
+  "keywords": [
+    "walk",
+    "directory",
+    "recursive",
+    "walk",
+    "tree",
+    "async",
+    "asynchronous",
+    "callback",
+    "recursive",
+    "directory",
+    "list",
+    "files",
+    "files",
+    "ecman"
+  ],
+  "author": "ecman <its.ec@outlook.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ecman/walkitout/issues"
+  },
+  "homepage": "https://github.com/ecman/walkitout#readme",
+  "engines": {
+    "node": ">=0.10.48"
+  }
+}
