@@ -1,5 +1,7 @@
 # walkitout
 
+[![build status](https://api.travis-ci.org/ecman/walkitout.png)](https://travis-ci.org/ecman/walkitout) [![codecov](https://codecov.io/gh/ecman/walkitout/branch/master/graph/badge.svg)](https://codecov.io/gh/ecman/walkitout) [![Code Climate](https://codeclimate.com/github/ecman/walkitout/badges/gpa.svg)](https://codeclimate.com/github/ecman/walkitout)
+
 Walk a directory tree recursively with callback and finish handler, asynchronously
 
 #  Usage
