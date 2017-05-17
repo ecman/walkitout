@@ -102,7 +102,9 @@ function walkitout(filePath, callback, completer, processor)
       return;
     }
 
-    callback(null, path.join(filePath, filename), processFiles);
+    callback(null, path.join(filePath, filename), function () {
+      processFiles();
+    });
 
   } // processFiles
 
