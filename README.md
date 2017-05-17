@@ -36,9 +36,7 @@ START WALK
 WALK STARTED
 FILE: test/index.js
 FILE: package.json
-FILE: out.txt
 FILE: index.js
-FILE: check.js
 FILE: README.md
 COMPLETE: wrap up processing 
 ```
