@@ -13,6 +13,8 @@ var actualFilenames = [];
 
 walkitout('.', onFile, onFinish);
 
+UM = "UM";
+
 function onFile(err, filename, done) {
   if (err) done();
   actualFilenames.push(filename);
@@ -31,5 +33,35 @@ function onFinish() {
       'actualFilenames should contain "' + expectedFilenames[i] + '"');
 
     i++;
-  }i
+  }
+
+  checkScopes();
+}
+
+function checkScopes() {
+  var scopedHandler = new ScopedHandler();
+
+  walkitout('.',
+    scopedHandler.handleFile, scopedHandler.handleFinish);
+}
+
+ScopedHandler.prototype.handleFile = ScopedHandler_handleFile;
+ScopedHandler.prototype.handleFinish = ScopedHandler_handleFinish;
+ScopedHandler.prototype.toString = ScopedHandler_toString;
+
+function ScopedHandler() {}
+
+function ScopedHandler_handleFile(err, fileName, done) {
+  assert.strictEqual(this, '[ScopedHandler]',
+    'callback handler should retain scope');
+  done();
+}
+
+function ScopedHandler_handleFinish(err, filename, done) {
+  assert.strictEqual(this, '[ScopedHandler]',
+    'finish handler should retain scope');
+}
+
+function ScopedHandler_toString() {
+  return '[ScopedHandler]';
 }
