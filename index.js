@@ -8,6 +8,7 @@ function walkitout(filePath, callback, completer, scope, processor)
   var directories = [];
   var files = [];
   var fileCount = 0;
+  var statErrors = 0;
   
   function dirDone() 
   {
@@ -61,20 +62,23 @@ function walkitout(filePath, callback, completer, scope, processor)
       {
         if (err)
         {
-          return;
+          statErrors += 1;
+          callback.call(scope, err, filename, (function () {}));
         }
-
-        if (stat.isDirectory()) 
+        else
         {
-          directories.push(filename);
-        }
-        else if (stat.isFile())
-        {
-          files.push(filename);
+          if (stat.isDirectory())
+          {
+            directories.push(filename);
+          }
+          else if (stat.isFile())
+          {
+            files.push(filename);
+          }
         }
 
         if ((directories.length + 
-              files.length) === fileCount) 
+              files.length) === (fileCount - statErrors))
         {
           processDirectories();
         }
