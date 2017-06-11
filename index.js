@@ -1,15 +1,17 @@
+require('function-prep');
 var fs = require('fs');
 var path = require('path');
 
 module.exports = walkitout;
 
-function walkitout(filePath, callback, completer, scope, processor)
+function walkitout(filePath, callback, completer, scope, controller, processor)
 {
   var directories = [];
   var files = [];
   var fileCount = 0;
   var statErrors = 0;
-  
+  var controller = controller || function (d, p, n, s) { n(); }
+
   function dirDone() 
   {
     if (processor)
@@ -98,10 +100,7 @@ function walkitout(filePath, callback, completer, scope, processor)
     }
 
     callback.call(scope,
-      null, path.join(filePath, filename),
-      function () {
-        processFiles();
-    });
+      null, path.join(filePath, filename), processFiles);
 
   } // processFiles
 
@@ -115,8 +114,9 @@ function walkitout(filePath, callback, completer, scope, processor)
       return;
     }
 
-    walkitout(path.join(filePath, dirname),
-      callback, completer, scope, processDirectories);
+    controller.call(scope, dirname, filePath,
+      walkitout.prep(path.join(filePath, dirname),
+        callback, completer, scope, controller, processDirectories), processDirectories)
 
   } // processDirectories
 
