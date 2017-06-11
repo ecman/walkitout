@@ -99,8 +99,9 @@ function walkitout(filePath, callback, completer, scope, controller, processor)
       return;
     }
 
-    callback.call(scope,
-      null, path.join(filePath, filename), processFiles);
+    setImmediate(function () {
+      callback.call(scope, null, path.join(filePath, filename), processFiles)
+    });
 
   } // processFiles
 
@@ -114,9 +115,11 @@ function walkitout(filePath, callback, completer, scope, controller, processor)
       return;
     }
 
-    controller.call(scope, dirname, filePath,
-      walkitout.prep(path.join(filePath, dirname),
-        callback, completer, scope, controller, processDirectories), processDirectories)
+    setImmediate(function () {
+      controller.call(scope, dirname, filePath,
+        walkitout.prep(path.join(filePath, dirname),
+          callback, completer, scope, controller, processDirectories), processDirectories)
+    });
 
   } // processDirectories
 
