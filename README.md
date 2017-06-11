@@ -16,8 +16,9 @@ console.log("START WALK");
  * @param callback  {function} callback handler 
  * @param finish    {function} optional finish handler
  * @param scope     {object} optional handler scope
+ * @param control   {function} optional descend controller
  */
-walkitout('.', processLog, processComplete, null)
+walkitout('.', processLog, processComplete, null, controlDescend)
 
 console.log("WALK STARTED");
 
@@ -36,13 +37,17 @@ function processLog(err, filename, done) {
 function processComplete() {
   console.log('COMPLETE: wrap up processing ');
 }
+
+function controlDescend(dirname, dirPath, descend, skip) {
+  // skip directories named test
+  (dirname === 'test') ? skip() : descend();
+}
 ```
 Output:
 
 ```text
 START WALK
 WALK STARTED
-FILE: test/index.js
 FILE: package.json
 FILE: index.js
 FILE: README.md
