@@ -10,7 +10,7 @@ function walkitout(filePath, callback, completer, scope, controller, processor)
   var files = [];
   var fileCount = 0;
   var statErrors = 0;
-  var controller = controller || function (d, p, n, s) { n(); }
+  var controller = controller || controlDescent;
 
   function dirDone() 
   {
@@ -65,7 +65,7 @@ function walkitout(filePath, callback, completer, scope, controller, processor)
         if (err)
         {
           statErrors += 1;
-          callback.call(scope, err, filename, (function () {}));
+          callback.call(scope, err, filename, noopFunction);
         }
         else
         {
@@ -99,9 +99,9 @@ function walkitout(filePath, callback, completer, scope, controller, processor)
       return;
     }
 
-    setImmediate(function () {
-      callback.call(scope, null, path.join(filePath, filename), processFiles)
-    });
+    setImmediate(
+      callback.prep(null, path.join(filePath, filename), processFiles).bind(scope)
+    );
 
   } // processFiles
 
@@ -115,11 +115,12 @@ function walkitout(filePath, callback, completer, scope, controller, processor)
       return;
     }
 
-    setImmediate(function () {
-      controller.call(scope, dirname, filePath,
+    setImmediate(
+      controller.prep(dirname, filePath,
         walkitout.prep(path.join(filePath, dirname),
-          callback, completer, scope, controller, processDirectories), processDirectories)
-    });
+          callback, completer, scope, controller, processDirectories),
+        processDirectories).bind(scope)
+    );
 
   } // processDirectories
 
@@ -127,3 +128,9 @@ function walkitout(filePath, callback, completer, scope, controller, processor)
 
 } // walkitout
 
+function controlDescent(dirname, dirPath, descend, skip) {
+  descend();
+}
+
+function noopFunction() {
+}
