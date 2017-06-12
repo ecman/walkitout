@@ -10,7 +10,7 @@ function walkitout(filePath, callback, completer, scope, controller, processor)
   var files = [];
   var fileCount = 0;
   var statErrors = 0;
-  var controller = controller || controlDescent;
+  controller = controller || controlDescent;
 
   function dirDone() 
   {
