@@ -1,4 +1,3 @@
-require('function-at');
 /*
  A tree data structure for use with the fs mock.
  Used so fs mock can send errors to walkitout
@@ -114,7 +113,7 @@ function getError(cfg) {
 
 function getExpectedPaths(tree) {
   return Object.keys(tree)
-    .filter(filterForExpectedPaths.atfirst(tree));
+    .filter(filterForExpectedPaths.bind(null, tree));
 }
 
 function getNoEntityError(filename) {
