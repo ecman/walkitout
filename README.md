@@ -40,7 +40,7 @@ function processComplete() {
 
 function controlDescend(dirname, dirPath, descend, skip, depth) {
   // skip directories named test,
-  // only wwalk a max-depth of 2 levels
+  // only walk a max-depth of 2 levels
   (dirname === 'test' || depth === 2) ?
     skip() : descend();
 }
