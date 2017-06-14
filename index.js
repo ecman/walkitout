@@ -1,4 +1,3 @@
-require('function-prep');
 var fs = require('fs');
 var path = require('path');
 
@@ -101,7 +100,7 @@ function walkitout(filePath, callback, completer, scope, controller, processor, 
     }
 
     setImmediate(
-      callback.prep(null, path.join(filePath, filename), processFiles).bind(scope)
+      callback.bind(scope, null, path.join(filePath, filename), processFiles)
     );
 
   } // processFiles
@@ -117,10 +116,10 @@ function walkitout(filePath, callback, completer, scope, controller, processor, 
     }
 
     setImmediate(
-      controller.prep(dirname, filePath,
-        walkitout.prep(path.join(filePath, dirname),
+      controller.bind(scope, dirname, filePath,
+        walkitout.bind(null, path.join(filePath, dirname),
           callback, completer, scope, controller, processDirectories, depth + 1),
-        processDirectories, depth).bind(scope)
+        processDirectories, depth)
     );
 
   } // processDirectories
