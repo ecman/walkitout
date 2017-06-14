@@ -38,9 +38,11 @@ function processComplete() {
   console.log('COMPLETE: wrap up processing ');
 }
 
-function controlDescend(dirname, dirPath, descend, skip) {
-  // skip directories named test
-  (dirname === 'test') ? skip() : descend();
+function controlDescend(dirname, dirPath, descend, skip, depth) {
+  // skip directories named test,
+  // only wwalk a max-depth of 2 levels
+  (dirname === 'test' || depth === 2) ?
+    skip() : descend();
 }
 ```
 Output:
