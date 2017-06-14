@@ -4,15 +4,16 @@ var path = require('path');
 
 module.exports = walkitout;
 
-function walkitout(filePath, callback, completer, scope, controller, processor)
+function walkitout(filePath, callback, completer, scope, controller, processor, depth)
 {
   var directories = [];
   var files = [];
   var fileCount = 0;
   var statErrors = 0;
   controller = controller || controlDescent;
+  depth = depth !== undefined ? depth : 1;
 
-  function dirDone() 
+  function dirDone()
   {
     if (processor)
     {
@@ -30,7 +31,7 @@ function walkitout(filePath, callback, completer, scope, controller, processor)
     var filename = '';
     var index = 0;
 
-    if (err) 
+    if (err)
     {
       fileCount = 0;
       processDirectories();
@@ -39,7 +40,7 @@ function walkitout(filePath, callback, completer, scope, controller, processor)
 
     fileCount = filenames.length;
 
-    if (fileCount === 0) 
+    if (fileCount === 0)
     {
         processDirectories();
         return;
@@ -52,7 +53,7 @@ function walkitout(filePath, callback, completer, scope, controller, processor)
       stat(filename);
 
       index += 1;
-    } 
+    }
 
   } // handleReaddir
 
@@ -60,7 +61,7 @@ function walkitout(filePath, callback, completer, scope, controller, processor)
 
       fs.stat(path.join(filePath, filename), handleStat);
 
-      function handleStat(err, stat) 
+      function handleStat(err, stat)
       {
         if (err)
         {
@@ -79,7 +80,7 @@ function walkitout(filePath, callback, completer, scope, controller, processor)
           }
         }
 
-        if ((directories.length + 
+        if ((directories.length +
               files.length) === (fileCount - statErrors))
         {
           processDirectories();
@@ -93,7 +94,7 @@ function walkitout(filePath, callback, completer, scope, controller, processor)
   {
     var filename = files.pop();
 
-    if (!filename) 
+    if (!filename)
     {
       dirDone();
       return;
@@ -109,7 +110,7 @@ function walkitout(filePath, callback, completer, scope, controller, processor)
   {
     var dirname = directories.pop();
 
-    if (!dirname) 
+    if (!dirname)
     {
       processFiles();
       return;
@@ -118,8 +119,8 @@ function walkitout(filePath, callback, completer, scope, controller, processor)
     setImmediate(
       controller.prep(dirname, filePath,
         walkitout.prep(path.join(filePath, dirname),
-          callback, completer, scope, controller, processDirectories),
-        processDirectories).bind(scope)
+          callback, completer, scope, controller, processDirectories, depth + 1),
+        processDirectories, depth).bind(scope)
     );
 
   } // processDirectories
@@ -128,7 +129,7 @@ function walkitout(filePath, callback, completer, scope, controller, processor)
 
 } // walkitout
 
-function controlDescent(dirname, dirPath, descend, skip) {
+function controlDescent(dirname, dirPath, descend, skip, depth) {
   descend();
 }
 

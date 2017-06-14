@@ -1,6 +1,6 @@
 {
   "name": "walkitout",
-  "version": "1.2.3",
+  "version": "1.3.0-0",
   "description": "Run a callback, asynchronously, on all filepaths in a directory tree",
   "main": "index.js",
   "directories": {
@@ -10,6 +10,7 @@
     "function-prep": "^1.0.0"
   },
   "devDependencies": {
+    "function-at": "^1.0.1",
     "istanbul": "^0.4.5"
   },
   "scripts": {
