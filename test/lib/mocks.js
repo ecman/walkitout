@@ -140,6 +140,8 @@ function filterForExpectedPaths(tree, filename)
   var pathCheck;
   var pathData;
   var pathOk;
+  var pathRegex = new RegExp('\\' + path.sep
+      + '[^\\' + path.sep + ']+$');
 
   if (isFile) fileOk = (data === null);
   else fileOk = data[0][0] === null &&
@@ -151,7 +153,7 @@ function filterForExpectedPaths(tree, filename)
 
   do
   {
-    pathCheck = pathCheck.replace(/\/[^\/]+$/, '');
+    pathCheck = pathCheck.replace(pathRegex, '');
     pathData = tree[pathCheck];
     pathOk = (!Array.isArray(pathData) ?
       pathData : (pathData[0][0]) === null &&
