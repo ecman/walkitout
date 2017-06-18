@@ -24,7 +24,8 @@ function testErrors(code, codeFile, tree)
 
     assert.strictEqual(actualPaths.length, expectedPaths.length,
       'Actual paths should have a count of ' + expectedPaths.length
-      + ' not ' + actualPaths.length);
+      + ' not ' + actualPaths.length + "\n\nactual:\n" + actualPaths.join("\n") 
+      + "\n\nexpected:\n" + expectedPaths.join("\n"));
     console.log('actual paths count is OK');
 
     while (i < expectedPaths.length)
