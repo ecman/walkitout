@@ -1,3 +1,5 @@
+var path = require('path');
+
 /*
  A tree data structure for use with the fs mock.
  Used so fs mock can send errors to walkitout
@@ -87,7 +89,7 @@ var filename = 'index.js';
 exports.getExpectedPaths = getExpectedPaths;
 
 exports.enable = function (tree) {
-  tree = tree || defaultTree;
+  tree = normalizeTree(tree || defaultTree);
   global.fs = fsMock(tree);
   global.__realRequire = global.require;
   global.__realModule = global.module;
@@ -158,4 +160,20 @@ function filterForExpectedPaths(tree, filename)
   while (pathOk && pathCheck.indexOf('/') !== -1)
 
   return pathOk && isFile;
+}
+
+function normalizeTree(tree) {
+  var normalTree = {};
+  var normalKey;
+  Object.keys(tree).forEach(function (key) {
+    normalKey = key;
+    if (path.sep === '/' && key.indexOf('\\') !== -1) {
+      normalKey = normalKey.split('\\').join('/');
+    }
+    else if (path.sep === '\\' && key.indexOf('/') !== -1) {
+      normalKey = normalKey.split('/').join('\\');
+    }
+    normalTree[normalKey] = tree[key];
+  });
+  return normalTree;
 }
