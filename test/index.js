@@ -3,16 +3,16 @@ var fs = require('fs');
 var path = require('path');
 var vm = require('vm');
 var mocks = require('./lib/mocks');
+var startPath = '.';
 
 main('index.js');
 
 function testErrors(code, codeFile, tree)
 {
-  var walkitout = vm.runInThisContext(code, codeFile);
+  vm.runInThisContext(code, codeFile);
   var actualPaths = [];
   var expectedPaths = mocks.getExpectedPaths(tree);
   var finishHandled = false;
-  var startPath = '.';
 
   var pathCheckWait = 1;
   // Wait n seconds and then check
@@ -106,7 +106,7 @@ function checkWalkControl(expectedFilenames)
     return !/^\.|coverage|node_modules|test/.test(filename);
   }
 
-  walkitout('.',
+  walkitout(startPath,
     // handler
     function (err, filename, done) {
       if (err) return done();
@@ -124,6 +124,8 @@ function checkWalkControl(expectedFilenames)
       assert.strictEqual(actualFilenames.length, expectedFilenames.length,
         'Actual filenames length does not match expected filenames length');
       console.log('descent control OK');
+
+      checkCancel(expectedFilenames);
     },
     // optional scope
     null,
@@ -138,7 +140,7 @@ function checkScopes(expectedFilenames)
 {
   var scopedHandler = new ScopedHandler(expectedFilenames);
 
-  walkitout('.',
+  walkitout(startPath,
     scopedHandler.handleFile, 
     scopedHandler.handleFinish, 
     scopedHandler);
@@ -188,4 +190,48 @@ function ScopedHandler(expectedFilenames)
   this.toString = function () {
     return '[ScopedHandler]';
   };
+}
+
+function checkCancel(expectedFilenames) {
+  var actualFilenames = [];
+  var cancelWalk;
+  var completions = 0;
+
+  cancelWalk = walkitout(startPath, function (err, filename, next) {
+    if (err) return next();
+    actualFilenames.push(filename);
+    next();
+  }, function (cancelled) {
+    assert.strictEqual(++completions, 1,
+      'Cancel should complete only once');
+    assert.strictEqual(true, cancelled,
+      'Cancel should complete with cancelled indication');
+    assert.notEqual(actualFilenames.length, expectedFilenames.length,
+      'cancelled walk should result in different length actual vs expected filenames array');
+
+    checkLateCancel(expectedFilenames);
+  });
+
+  cancelWalk();
+  cancelWalk();
+}
+
+function checkLateCancel(expectedFilenames) {
+  var actualFilenames = [];
+  var cancelWalk;
+  var completed = false;
+
+  cancelWalk = walkitout(startPath, function (err, filename, next) {
+    if (err) return next();
+    actualFilenames.push(filename);
+    next();
+  }, function (cancelled) {
+    assert.strictEqual(false, cancelled,
+      'Late cancel should complete normally');
+  });
+
+  setTimeout(function () {
+    cancelWalk();
+    console.log('cancellation OK');
+  }, 1000);
 }

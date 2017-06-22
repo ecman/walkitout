@@ -3,7 +3,7 @@ var path = require('path');
 
 module.exports = walkitout;
 
-function walkitout(filePath, callback, completer, scope, controller, processor, depth)
+function walkitout(filePath, callback, completer, scope, controller, processor, depth, detail)
 {
   var directories = [];
   var files = [];
@@ -11,6 +11,16 @@ function walkitout(filePath, callback, completer, scope, controller, processor, 
   var statErrors = 0;
   controller = controller || controlDescent;
   depth = depth !== undefined ? depth : 1;
+  detail = detail || { cancelled: false, completed: false };
+
+  function complete()
+  {
+    if (detail.completed) return;
+
+    detail.completed = true;
+
+    if (completer) completer.call(scope, detail.cancelled);
+  }
 
   function dirDone()
   {
@@ -18,9 +28,9 @@ function walkitout(filePath, callback, completer, scope, controller, processor, 
     {
       processor();
     }
-    else if (completer)
+    else
     {
-      completer.call(scope);
+      complete();
     }
 
   } // dirDone
@@ -99,9 +109,12 @@ function walkitout(filePath, callback, completer, scope, controller, processor, 
       return;
     }
 
-    setImmediate(
-      callback.bind(scope, null, path.join(filePath, filename), processFiles)
-    );
+    if (!detail.cancelled)
+    {
+      setImmediate(
+        callback.bind(scope, null, path.join(filePath, filename), processFiles)
+      );
+    }
 
   } // processFiles
 
@@ -115,16 +128,24 @@ function walkitout(filePath, callback, completer, scope, controller, processor, 
       return;
     }
 
-    setImmediate(
-      controller.bind(scope, dirname, filePath,
-        walkitout.bind(null, path.join(filePath, dirname),
-          callback, completer, scope, controller, processDirectories, depth + 1),
-        processDirectories, depth)
-    );
+    if (!detail.cancelled)
+    {
+      setImmediate(
+        controller.bind(scope, dirname, filePath,
+          walkitout.bind(null, path.join(filePath, dirname),
+            callback, completer, scope, controller, processDirectories, depth + 1, detail),
+          processDirectories, depth)
+      );
+    }
 
   } // processDirectories
 
   fs.readdir(filePath, handleReaddir);
+
+  return function cancel() {
+    detail.cancelled = true;
+    setImmediate(complete);
+  };
 
 } // walkitout
 
