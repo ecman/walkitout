@@ -12,13 +12,16 @@ var walkitout = require('walkitout');
 console.log("START WALK");
 
 /**
- * @param path      {string} path to walk
- * @param callback  {function} callback handler 
- * @param finish    {function} optional finish handler
- * @param scope     {object} optional handler scope
- * @param control   {function} optional descend controller
+ * @param {string}    path      path to walk
+ * @param {function}  callback  callback handler
+ * @param {function}  finish    optional finish handler
+ * @param (object}    scope     optional handler scope
+ * @param {function}  control   optional descent controller
+ *
+ * @returns {function}  ends walk and invokes finish
  */
-walkitout('.', processLog, processComplete, null, controlDescend)
+var cancelWalk = walkitout('.',
+  processLog, processComplete, null, controlDescent)
 
 console.log("WALK STARTED");
 
@@ -34,17 +37,20 @@ function processLog(err, filename, done) {
   done();
 }
 
-function processComplete() {
-  console.log('COMPLETE: wrap up processing ');
+function processComplete(cancelled) {
+  // "cancelled" is true if cancelWalk() was invoked
+  var info = '(' + (cancelled ? '' : 'not ') + 'cancelled)';
+  console.log('COMPLETE: wrap up processing ' + info);
 }
 
-function controlDescend(dirname, dirPath, descend, skip, depth) {
+function controlDescent(dirname, dirPath, descend, skip, depth) {
   // skip directories named test,
   // only walk a max-depth of 2 levels
   (dirname === 'test' || depth === 2) ?
     skip() : descend();
 }
 ```
+
 Output:
 
 ```text
@@ -53,5 +59,5 @@ WALK STARTED
 FILE: package.json
 FILE: index.js
 FILE: README.md
-COMPLETE: wrap up processing 
+COMPLETE: wrap up processing (not cancelled)
 ```
